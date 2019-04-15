@@ -1,0 +1,1 @@
+BoundingBoxPerson[] persons_array
