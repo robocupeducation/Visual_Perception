@@ -1,0 +1,10 @@
+<launch>
+
+  <include file="$(find openni2_launch)/launch/openni2.launch"/>
+  <include file="$(find darknet_ros)/launch/darknet_ros.launch"/>
+
+  <node pkg="object_detection" type="object_detector" name="Objects_Detector" output="screen"/>
+  <param name="obj1" type="string" value="cell phone"/>
+  <param name="obj2" type="string" value="fork"/>
+
+</launch>
