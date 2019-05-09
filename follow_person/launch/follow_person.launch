@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="number_persons_recognition" type="people_stimator" name="People_Stimator" />
+  <node pkg="follow_person" type="person_followed_publisher" name="Person_Followed_Publisher" output="screen" />
+
+</launch>

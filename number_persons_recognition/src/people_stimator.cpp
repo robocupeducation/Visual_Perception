@@ -6,6 +6,9 @@
 #include "number_persons_recognition/BoundingBoxPersonArray.h"
 #include "number_persons_recognition/BoundingBoxPerson.h"
 #include <vector>
+#include <time.h>
+#include <stdio.h>
+#include <unistd.h>
 
 const float MinPersonProb = 0.7;
 ros::Publisher person_stimation_publisher;
@@ -37,10 +40,15 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "darknet_ros_subscriber");
   ros::NodeHandle n;
-  ros::Rate rate(1);
-
   person_stimation_publisher = n.advertise<number_persons_recognition::BoundingBoxPersonArray>("/person_stimate", 1);
   ros::Subscriber sub_node = n.subscribe("/darknet_ros/bounding_boxes",
                                           1, cb);
   ros::spin();
+  /*
+  while(ros::ok()){
+    step();
+    ros::spinOnce();
+    rate.sleep();
+  }
+  */
 }

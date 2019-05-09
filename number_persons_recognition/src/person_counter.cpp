@@ -6,46 +6,70 @@
 #include "number_persons_recognition/BoundingBoxPersonArray.h"
 #include "number_persons_recognition/BoundingBoxPerson.h"
 #include <vector>
+#include <algorithm>
+
+//PONER EN EL .LAUNCH COMO PARAMETER
+const float MaxDist = 3000.0; //Max Distance in mm
 
 std::vector<number_persons_recognition::BoundingBoxPerson> person_arr;
 cv_bridge::CvImagePtr cv_image;
 ros::Publisher person_count_publisher;
 
-void cb(const number_persons_recognition::BoundingBoxPersonArray::ConstPtr& msg)
+void cb_stimation(const number_persons_recognition::BoundingBoxPersonArray::ConstPtr& msg)
 {
   person_arr = msg->persons_array;
-  std_msgs::Int32 size;
-  size.data = person_arr.size();
-  person_count_publisher.publish(size);
+
 }
 
-void cb2(const sensor_msgs::Image::ConstPtr& msg)
+void cb_person_count(const sensor_msgs::Image::ConstPtr& msg)
 {
-  if(person_arr.size() > 0){
-    cv_image = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
-    cv::Mat ROI(cv_image->image, cv::Rect(person_arr[0].xmin, person_arr[0].ymin,
-                person_arr[0].xmax - person_arr[0].xmin, person_arr[0].ymax - person_arr[0].ymin));
-    cv::Mat croppedImage;
-    ROI.copyTo(croppedImage);
-    cv::imshow("Image cropped", croppedImage);
-    cv::waitKey(3);
-  }else{
-    try{
-      cv::destroyWindow("Image cropped");
-    }catch (cv::Exception& e){
-			return;
-		}
-  }
 
+  float dist;
+  int width;
+  int height;
+  cv::Mat croppedImage;
+  std::vector<float> distVector;
+  std_msgs::Int32 size;
+  size.data = 0;
+  //if(person_arr.size() > 0){
+  for (int i = 0; i < person_arr.size(); i++)
+  {
+    cv_image = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::TYPE_32FC1);
+    width = person_arr[i].xmax - person_arr[i].xmin;
+    height = person_arr[i].ymax - person_arr[i].ymin;
+    cv::Mat ROI(cv_image->image, cv::Rect(person_arr[i].xmin, person_arr[i].ymin,
+                width, height));
+    ROI.copyTo(croppedImage);
+    //cv::imshow("Image cropped", croppedImage);
+    //cv::waitKey(3);
+    dist = 0.0;
+    for(int j = 0; j < width; j++)
+    {
+      for(int k = 0; k < height; k++)
+      {
+        dist = (float)croppedImage.at<float>(j, k);
+        distVector.push_back(dist);
+      }
+    }
+
+    std::sort (distVector.begin(), distVector.end());
+    //printf("%f\n", distVector[(int)(distVector.size() / 2)]);
+    float med = distVector[(int)(distVector.size() / 2)];
+    if (med < MaxDist) {
+      size.data = size.data + 1;
+    }
+  }
+  person_count_publisher.publish(size);
 }
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "people_stimator_subscriber");
   ros::NodeHandle n;
+
   person_count_publisher = n.advertise<std_msgs::Int32>("/person_count", 1);
-  ros::Subscriber sub_node_persons = n.subscribe("/person_stimate", 1, cb);
-  ros::Subscriber sub_node_image = n.subscribe("/camera/rgb/image_raw", 1, cb2);
+  ros::Subscriber sub_node_persons = n.subscribe("/person_stimate", 1, cb_stimation); //&Init::cb,this
+  ros::Subscriber sub_node_image = n.subscribe("/camera/depth/image_raw", 1, cb_person_count);
   ros::spin();
 
 }
