@@ -14,7 +14,7 @@ network [YOLO](https://github.com/leggedrobotics/darknet_ros).
 $ roslaunch openni2_launch openni2.launch
 ```
 
-**Launch Darknet Ros**
+**Launch Darknet Ros:**
 
 ```
 $ roslaunch darknet_ros darknet_ros.launch
