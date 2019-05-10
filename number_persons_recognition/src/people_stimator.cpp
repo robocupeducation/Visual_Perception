@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-const float MinPersonProb = 0.7;
+const float MinPersonProb = 0.65;
 ros::Publisher person_stimation_publisher;
 
 void cb(const darknet_ros_msgs::BoundingBoxes::ConstPtr& msg)
