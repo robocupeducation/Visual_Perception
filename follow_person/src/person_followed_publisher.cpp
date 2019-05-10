@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "std_msgs/Int32.h"
+#include "std_msgs/Float32.h"
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -8,6 +9,8 @@
 #include <vector>
 #include <algorithm>
 #include "follow_person/PersonFollowedData.h"
+
+const float maxDist = 2000.0;
 
 ros::Publisher pub;
 std::vector<number_persons_recognition::BoundingBoxPerson> person_arr;
@@ -60,17 +63,19 @@ void cb_image(const sensor_msgs::Image::ConstPtr& msg)
     int centralPixel = getCentralPixel(person_arr[0]);
     for(int i = 1; i < person_arr.size(); i++)
     {
-      float d = getDist(person_arr[i], msg);
+      int d = getDist(person_arr[i], msg);
       if(d < dist){
         dist = d;
-        int centralPixel = getCentralPixel(person_arr[i]);
+        centralPixel = getCentralPixel(person_arr[i]);
       }
     }
     follow_person::PersonFollowedData data;
-    data.dist = dist;
-    data.centralPixel = centralPixel;
-    //Publico la distancia y el centro en x
-    pub.publish(data);
+    if(dist <= maxDist){
+      data.dist = dist;
+      data.centralPixel = centralPixel;
+      //Publico la distancia y el centro en x
+      pub.publish(data);
+    }
   }
 
 }

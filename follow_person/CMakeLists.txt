@@ -8,7 +8,7 @@ project(follow_person)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  #darknet_ros_msgs
+  message_generation
   number_persons_recognition
   roscpp
   rospy
@@ -124,8 +124,11 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${catkin_INCLUDE_DIRS})
 
 add_executable(person_followed_publisher src/person_followed_publisher.cpp)
+add_executable(pd_algorithm src/pd_algorithm.cpp)
 
 target_link_libraries(person_followed_publisher ${catkin_LIBRARIES})
+target_link_libraries(pd_algorithm ${catkin_LIBRARIES})
+
 target_link_libraries(person_followed_publisher ${OpenCV_LIBRARIES})
 
 ## Declare a C++ library
