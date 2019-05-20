@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>follow_person</name>
-  <version>1.0.0</version>
-  <description>The follow_person package</description>
+  <name>pruebas_bica</name>
+  <version>0.0.0</version>
+  <description>The pruebas_bica package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="fergonzaramos@yahoo.es">fernando</maintainer>
+  <maintainer email="fernando@todo.todo">fernando</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>BSD</license>
+  <license>TODO</license>
 
 
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/follow_person</url> -->
+  <!-- <url type="website">http://wiki.ros.org/pruebas_bica</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -49,26 +49,23 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>darknet_ros</build_depend>
-  <build_depend>number_persons_recognition</build_depend>
+  <build_depend>bica</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>bica_msgs</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>message_generation</build_depend>
 
-  <build_export_depend>darknet_ros</build_export_depend>
-  <build_export_depend>number_persons_recognition</build_export_depend>
+  <build_export_depend>bica</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>bica_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
-  <build_export_depend>std_msgs</build_export_depend>
 
-  <exec_depend>darknet_ros</exec_depend>
-  <exec_depend>number_persons_recognition</exec_depend>
+  <exec_depend>bica</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>bica_msgs</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
-
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
