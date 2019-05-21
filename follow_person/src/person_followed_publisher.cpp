@@ -13,109 +13,117 @@
 #include <cmath>
 #include <ctime>
 #include "std_msgs/String.h"
+#include "bica/Component.h"
 
 const float maxDist = 1500.0;
 const int MaxDistPixels = 170;
 
-ros::Publisher pub, talk_publisher;
-ros::Subscriber info_sub;
-std::vector<number_persons_recognition::BoundingBoxPerson> person_arr;
-time_t currentTime = time(NULL);
-time_t prevTime = time(NULL);
-
-int prevCentralPixel;
-
-float getDist(number_persons_recognition::BoundingBoxPerson p, const sensor_msgs::Image::ConstPtr& msg)
+class PersonData: public bica::Component
 {
-  float dist;
-  int width, height;
-  cv::Mat croppedImage;
-  std::vector<float> distVector;
-  std_msgs::Int32 size;
-
-  cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::TYPE_32FC1);
-  width = p.xmax - p.xmin;
-  height = p.ymax - p.ymin;
-  cv::Mat ROI(cv_image->image, cv::Rect(p.xmin, p.ymin,
-              width, height));
-  ROI.copyTo(croppedImage);
-  dist = 0.0;
-  for(int j = 0; j < width; j++)
-  {
-    for(int k = 0; k < height; k++)
-    {
-      dist = (float)croppedImage.at<float>(j, k);
-      distVector.push_back(dist);
-    }
-  }
-
-  std::sort (distVector.begin(), distVector.end());
-  float med = distVector[(int)(distVector.size() / 2)];
-  return med;
-}
-
-int getCentralPixel(number_persons_recognition::BoundingBoxPerson p)
-{
-  return (int)((p.xmin + p.xmax) / 2);
-}
-
-void cb_persons(const number_persons_recognition::BoundingBoxPersonArray::ConstPtr& msg)
-{
-  person_arr = msg->persons_array;
-
-}
-
-void cb_image(const sensor_msgs::Image::ConstPtr& msg)
-{
+private:
+  ros::NodeHandle n;
+  ros::Subscriber sub_image, sub_persons, info_sub;
+  ros::Publisher dataPub, talk_publisher;
+  std::vector<number_persons_recognition::BoundingBoxPerson> person_arr;
   time_t currentTime = time(NULL);
-  if(person_arr.size() > 0){
-    float dist = getDist(person_arr[0], msg);
-    int centralPixel = getCentralPixel(person_arr[0]);
-    for(int i = 1; i < person_arr.size(); i++)
+  time_t prevTime = time(NULL);
+  int prevCentralPixel;
+
+public:
+  PersonData()
+  {
+    dataPub = n.advertise<follow_person::PersonFollowedData>("/person_followed_data", 1);
+    talk_publisher = n.advertise<std_msgs::String>("/talk", 1);
+    info_sub = n.subscribe("/camera/rgb/camera_info", 1, &PersonData::cb_info, this);
+    sub_image = n.subscribe("/camera/depth/image_raw", 1, &PersonData::cb_image, this);
+    sub_persons = n.subscribe("/person_stimate", 1, &PersonData::cb_persons, this);
+  }
+  float getDist(number_persons_recognition::BoundingBoxPerson p, const sensor_msgs::Image::ConstPtr& msg)
+  {
+    float dist;
+    int width, height;
+    cv::Mat croppedImage;
+    std::vector<float> distVector;
+    std_msgs::Int32 size;
+
+    cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::TYPE_32FC1);
+    width = p.xmax - p.xmin;
+    height = p.ymax - p.ymin;
+    cv::Mat ROI(cv_image->image, cv::Rect(p.xmin, p.ymin,
+                width, height));
+    ROI.copyTo(croppedImage);
+    dist = 0.0;
+    for(int j = 0; j < width; j++)
     {
-      int d = getDist(person_arr[i], msg);
-      if(d < dist){
-        dist = d;
-        centralPixel = getCentralPixel(person_arr[i]);
+      for(int k = 0; k < height; k++)
+      {
+        dist = (float)croppedImage.at<float>(j, k);
+        distVector.push_back(dist);
       }
     }
-    follow_person::PersonFollowedData data;
-    if(dist <= maxDist){
-      prevCentralPixel = centralPixel;
-      time_t prevTime = time(NULL);
-      data.dist = dist;
-      data.centralPixel = centralPixel;
-      //Publico la distancia y el centro en x
-      pub.publish(data);
-    }else{
-      //Si estoy mas de tres segundos sin ver a la persona le pido que se acerque
-      if(currentTime - prevTime >= 4.0){
-        printf("%f\n", currentTime - prevTime);
-        std_msgs::String s;
-        s.data = "Come closer, please";
-        talk_publisher.publish(s);
+
+    std::sort (distVector.begin(), distVector.end());
+    float med = distVector[(int)(distVector.size() / 2)];
+    return med;
+  }
+
+  int getCentralPixel(number_persons_recognition::BoundingBoxPerson p)
+  {
+    return (int)((p.xmin + p.xmax) / 2);
+  }
+
+  void cb_persons(const number_persons_recognition::BoundingBoxPersonArray::ConstPtr& msg)
+  {
+    person_arr = msg->persons_array;
+
+  }
+
+  void cb_image(const sensor_msgs::Image::ConstPtr& msg)
+  {
+    if(isActive()){
+      time_t currentTime = time(NULL);
+      if(person_arr.size() > 0){
+        float dist = getDist(person_arr[0], msg);
+        int centralPixel = getCentralPixel(person_arr[0]);
+        for(int i = 1; i < person_arr.size(); i++)
+        {
+          int d = getDist(person_arr[i], msg);
+          if(d < dist){
+            dist = d;
+            centralPixel = getCentralPixel(person_arr[i]);
+          }
+        }
+        follow_person::PersonFollowedData data;
+        if(dist <= maxDist){
+          prevCentralPixel = centralPixel;
+          time_t prevTime = time(NULL);
+          data.dist = dist;
+          data.centralPixel = centralPixel;
+          //Publico la distancia y el centro en x
+          dataPub.publish(data);
+        }else{
+          //Si estoy mas de tres segundos sin ver a la persona le pido que se acerque
+          if(currentTime - prevTime >= 4.0){
+            std_msgs::String s;
+            s.data = "Come closer, please";
+            talk_publisher.publish(s);
+          }
+        }
       }
     }
   }
 
-}
-
-void cb_info(const sensor_msgs::CameraInfo::ConstPtr& msg)
-{
-  int width = msg->width;
-  prevCentralPixel = (int)(width / 2);
-  info_sub.shutdown();
-}
+  void cb_info(const sensor_msgs::CameraInfo::ConstPtr& msg)
+  {
+    int width = msg->width;
+    prevCentralPixel = (int)(width / 2);
+    info_sub.shutdown();
+  }
+};
 
 int main(int argc, char **argv) {
 
   ros::init(argc, argv, "Person_Followed_Publisher");
-  ros::NodeHandle n;
-
-  pub = n.advertise<follow_person::PersonFollowedData>("/person_followed_data", 1);
-  talk_publisher = n.advertise<std_msgs::String>("/talk", 1);
-  info_sub = n.subscribe("/camera/rgb/camera_info", 1, cb_info);
-  ros::Subscriber sub_image = n.subscribe("/camera/depth/image_raw", 1, cb_image);
-  ros::Subscriber sub_persons = n.subscribe("/person_stimate", 1, cb_persons);
+  PersonData personData;
   ros::spin();
 }

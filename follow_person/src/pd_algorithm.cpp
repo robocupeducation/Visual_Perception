@@ -78,17 +78,19 @@ public:
 
   void cb(const follow_person::PersonFollowedData::ConstPtr& msg)
   {
-    if(width != 0){
-      float dist = msg->dist;
-      int centralPixel = msg->centralPixel;
-      float v = pdAlgorithm::linear(dist);
-      float w = pdAlgorithm::angular(centralPixel);
+    if(isActive()){
+      if(width != 0){
+        float dist = msg->dist;
+        int centralPixel = msg->centralPixel;
+        float v = pdAlgorithm::linear(dist);
+        float w = pdAlgorithm::angular(centralPixel);
 
-      geometry_msgs::Twist vel;
-      vel.linear.x = v;
-      vel.angular.z = w;
+        geometry_msgs::Twist vel;
+        vel.linear.x = v;
+        vel.angular.z = w;
 
-      speed_pub_.publish(vel);
+        speed_pub_.publish(vel);
+      }
     }
   }
   void cb_info(const sensor_msgs::CameraInfo::ConstPtr& msg)
