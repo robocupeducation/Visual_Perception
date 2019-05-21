@@ -8,11 +8,13 @@ project(follow_person)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  bica
   message_generation
   number_persons_recognition
   roscpp
   rospy
   std_msgs
+  bica_msgs
   cv_bridge
 )
 find_package(OpenCV REQUIRED)
