@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(number_persons_recognition)
+project(object_detection)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,14 +8,12 @@ project(number_persons_recognition)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
   darknet_ros_msgs
   roscpp
   rospy
   std_msgs
-  cv_bridge
 )
-find_package(OpenCV REQUIRED)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -50,11 +48,10 @@ find_package(OpenCV REQUIRED)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   BoundingBoxPerson.msg
-   BoundingBoxPersonArray.msg
- )
+ #add_message_files(
+  # FILES
+  # Message2.msg
+ #)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -71,10 +68,10 @@ find_package(OpenCV REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-   std_msgs
- )
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs
+ #)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -107,8 +104,8 @@ find_package(OpenCV REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES number_persons_recognition
-#  CATKIN_DEPENDS darknet_ros/ roscpp rospy std_msgs
+#  LIBRARIES object_detection
+#  CATKIN_DEPENDS darknet_ros_msgs roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -118,25 +115,12 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-#include_directories(
-# include
-#  ${catkin_INCLUDE_DIRS}
-#  ${OpenCV_INCLUDE_DIRS}
-#)
-include_directories(${OpenCV_INCLUDE_DIRS})
+
 include_directories(${catkin_INCLUDE_DIRS})
 
-add_executable(people_stimator src/people_stimator.cpp)
-add_executable(person_counter src/person_counter.cpp)
+add_executable(object_detector src/objects_detector.cpp)
 
-target_link_libraries(people_stimator ${catkin_LIBRARIES})
-target_link_libraries(person_counter ${catkin_LIBRARIES})
-target_link_libraries(person_counter ${OpenCV_LIBRARIES})
-
-## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/number_persons_recognition.cpp
-# )
+target_link_libraries(object_detector ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -146,7 +130,7 @@ target_link_libraries(person_counter ${OpenCV_LIBRARIES})
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/number_persons_recognition_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/object_detection_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -203,7 +187,7 @@ target_link_libraries(person_counter ${OpenCV_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_number_persons_recognition.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_object_detection.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

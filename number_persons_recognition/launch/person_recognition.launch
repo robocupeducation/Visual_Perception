@@ -1,6 +1,4 @@
 <launch>
-
   <node pkg="number_persons_recognition" type="people_stimator" name="People_Stimator" />
   <node pkg="number_persons_recognition" type="person_counter" name="Person_Counter" output="screen" />
-
 </launch>
