@@ -13,7 +13,7 @@ private:
 
   ros::NodeHandle n;
   std::vector<std::string> objects_collection;
-  ros::Publisher object_publisher, talk_publisher;
+  ros::Publisher object_publisher;
   ros::Subscriber sub_node;
   std::string object;
 public:
@@ -21,9 +21,7 @@ public:
   {
     MinProb = 0.4;
     object_publisher = n.advertise<std_msgs::String>("/object_detected", 1);
-    talk_publisher = n.advertise<std_msgs::String>("/talk", 1);
     Detector::getParams(n);
-    Detector::talk();
     sub_node = n.subscribe("/darknet_ros/bounding_boxes", 1, &Detector::callback, this);
   }
   void getParams(ros::NodeHandle n)
@@ -34,13 +32,6 @@ public:
     objects_collection.push_back(s);
     n.getParam("obj2", s);
     objects_collection.push_back(s);
-  }
-
-  void talk()
-  {
-    std_msgs::String s;
-    s.data = "Detecting Objects";
-    talk_publisher.publish(s);
   }
 
   bool objectFound(const darknet_ros_msgs::BoundingBoxes::ConstPtr& msg)

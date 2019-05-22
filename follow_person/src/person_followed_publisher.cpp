@@ -15,19 +15,20 @@
 #include "std_msgs/String.h"
 #include "bica/Component.h"
 
-const float maxDist = 1500.0;
+const float maxDist = 2100.0;
 const int MaxDistPixels = 170;
 
 class PersonData: public bica::Component
 {
 private:
   ros::NodeHandle n;
-  ros::Subscriber sub_image, sub_persons, info_sub;
+  ros::Subscriber sub_image, sub_persons, info_sub, object_subscriber_;
   ros::Publisher dataPub, talk_publisher;
   std::vector<number_persons_recognition::BoundingBoxPerson> person_arr;
   time_t currentTime = time(NULL);
   time_t prevTime = time(NULL);
   int prevCentralPixel;
+  std::string obj;
 
 public:
   PersonData()
@@ -37,6 +38,8 @@ public:
     info_sub = n.subscribe("/camera/rgb/camera_info", 1, &PersonData::cb_info, this);
     sub_image = n.subscribe("/camera/depth/image_raw", 1, &PersonData::cb_image, this);
     sub_persons = n.subscribe("/person_stimate", 1, &PersonData::cb_persons, this);
+    object_subscriber_ = n.subscribe("/orders", 1, &PersonData::objectCallback, this);
+    obj = "person";
   }
   float getDist(number_persons_recognition::BoundingBoxPerson p, const sensor_msgs::Image::ConstPtr& msg)
   {
@@ -93,21 +96,22 @@ public:
             centralPixel = getCentralPixel(person_arr[i]);
           }
         }
-        follow_person::PersonFollowedData data;
-        if(dist <= maxDist){
+        if(obj == "person"){
+          if(dist < maxDist && abs(centralPixel - prevCentralPixel) <= MaxDistPixels){
+            follow_person::PersonFollowedData data;
+            prevCentralPixel = centralPixel;
+            data.dist = dist;
+            data.centralPixel = centralPixel;
+            //Publico la distancia y el centro en x
+            dataPub.publish(data);
+          }
+        }else{
+          follow_person::PersonFollowedData data;
           prevCentralPixel = centralPixel;
-          time_t prevTime = time(NULL);
           data.dist = dist;
           data.centralPixel = centralPixel;
           //Publico la distancia y el centro en x
           dataPub.publish(data);
-        }else{
-          //Si estoy mas de tres segundos sin ver a la persona le pido que se acerque
-          if(currentTime - prevTime >= 4.0){
-            std_msgs::String s;
-            s.data = "Come closer, please";
-            talk_publisher.publish(s);
-          }
         }
       }
     }
@@ -118,6 +122,11 @@ public:
     int width = msg->width;
     prevCentralPixel = (int)(width / 2);
     info_sub.shutdown();
+  }
+
+  void objectCallback(const std_msgs::String::ConstPtr& msg)
+  {
+    obj = msg->data;
   }
 };
 

@@ -7,6 +7,7 @@
 #include "sensor_msgs/CameraInfo.h"
 #include <bica/Component.h>
 #include <cmath>
+#include <string>
 
 const float Pi = 3.1416;
 
@@ -30,11 +31,10 @@ public:
     speed_pub_ = n_.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1);
     talk_publisher_ = n_.advertise<std_msgs::String>("/talk", 1);
 
-
     width = 0;
     minDist = 900.0;
     maxDist = 1200.0;
-    maxV = 0.6;
+    maxV = 0.5;
     Kp = 0.3;
     Kd = 0.7;
     prevV = 0;
@@ -61,6 +61,9 @@ public:
     if(abs(v - prevV) >= maxV / 8.0){
       v = v / 8.0;
     }
+    if(v < 0.0){
+      v = prevV;
+    }
     prevV = v;
     return v;
   }
@@ -84,7 +87,6 @@ public:
         int centralPixel = msg->centralPixel;
         float v = pdAlgorithm::linear(dist);
         float w = pdAlgorithm::angular(centralPixel);
-
         geometry_msgs::Twist vel;
         vel.linear.x = v;
         vel.angular.z = w;
