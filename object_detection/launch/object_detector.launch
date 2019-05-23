@@ -2,6 +2,6 @@
 
   <node pkg="object_detection" type="object_detector" name="Objects_Detector" output="screen"/>
   <param name="obj1" type="string" value="cell phone"/>
-  <param name="obj2" type="string" value="fork"/>
+  <param name="obj2" type="string" value="bottle"/>
 
 </launch>
