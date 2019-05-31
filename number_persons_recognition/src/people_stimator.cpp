@@ -12,13 +12,13 @@
 #include <unistd.h>
 #include <string>
 
-const float MinPersonProb = 0.7;
+const float MinPersonProb = 0.6;
 
 class Stimator
 {
 private:
   ros::NodeHandle n;
-  ros::Publisher person_stimation_publisher;
+  ros::Publisher person_stimation_publisher, prueba_pub;
   ros::Subscriber sub_node, object_subscriber;
   std::string obj;
 public:
@@ -28,6 +28,8 @@ public:
     person_stimation_publisher = n.advertise<number_persons_recognition::BoundingBoxPersonArray>("/person_stimate", 1);
     sub_node = n.subscribe("/darknet_ros/bounding_boxes", 1, &Stimator::cb, this);
     object_subscriber = n.subscribe("/orders", 1, &Stimator::objectCallback, this);
+    prueba_pub = n.advertise<std_msgs::String>("/prueba", 1);
+
   }
 
 
@@ -38,6 +40,7 @@ public:
     number_persons_recognition::BoundingBoxPerson element;
     for (int i = 0; i < boxessize; i++)
     {
+      //ROS_ERROR("object to detect: %s", obj.c_str());
       if(msg->bounding_boxes[i].Class == obj){
         if(msg->bounding_boxes[i].probability > MinPersonProb){
 
@@ -57,6 +60,9 @@ public:
   void objectCallback(const std_msgs::String::ConstPtr& msg)
   {
     obj = msg->data;
+    std_msgs::String m;
+    m.data = obj;
+    prueba_pub.publish(m);
   }
 
 };
