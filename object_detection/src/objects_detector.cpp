@@ -21,20 +21,20 @@ private:
 public:
   Detector()
   {
-    MinProb = 0.2;
-    object_publisher = n.advertise<std_msgs::String>("/talk", 1);
+    MinProb = 0.4;
+    object_publisher = n.advertise<std_msgs::String>("/object_detected", 1);
     stop_publisher = n.advertise<std_msgs::Empty>("/stop_obj_recog", 1);
-    Detector::getParams(n);
+    getParams();
     sub_node = n.subscribe("/darknet_ros/bounding_boxes", 1, &Detector::callback, this);
   }
-  void getParams(ros::NodeHandle n)
+  void getParams()
   {
-    std::vector<std::string> v;
-    std::string s;
-    n.getParam("obj1", s);
-    objects_collection.push_back(s);
-    n.getParam("obj2", s);
-    objects_collection.push_back(s);
+    if(n.hasParam("/Objects_Detector/objects")){
+      n.getParam("/Objects_Detector/objects", objects_collection);
+    }
+    /*for(int i = 0; i < objects_collection.size(); i++){
+      ROS_INFO("%s", objects_collection[i].c_str());
+    }*/
   }
 
   bool objectFound(const darknet_ros_msgs::BoundingBoxes::ConstPtr& msg)
@@ -53,7 +53,6 @@ public:
 	  //objects_collection[i]
           if(obj.Class == objects_collection[i]){
             finish = 1;
-            ROS_WARN("Encontrado!");
             object = obj.Class;
           }else{
             i++;
@@ -75,7 +74,6 @@ public:
         m.data = object;
         object_publisher.publish(m);
         //Publico el "stop"
-        ROS_WARN("Objeto Detectado");
         std_msgs::Empty l;
         stop_publisher.publish(l);
       }
