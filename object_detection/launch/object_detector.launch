@@ -1,9 +1,7 @@
 <launch>
 
   <node pkg="object_detection" type="object_detector" name="Objects_Detector" output="screen">
-      <rosparam command="load" file="$(find object_detection)/config/objects.yaml" />
+      <rosparam command="load" file="$(find object_detection)/config/objectlist.yaml" />
   </node>
-  <param name="obj1" type="string" value="cell phone"/>
-  <param name="obj2" type="string" value="bottle"/>
 
 </launch>
