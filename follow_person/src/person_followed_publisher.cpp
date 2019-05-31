@@ -8,7 +8,7 @@
 #include "number_persons_recognition/BoundingBoxPerson.h"
 #include <vector>
 #include <algorithm>
-#include "follow_person/PersonFollowedData.h"
+#include "robocuphomeeducation_msgs/PersonFollowedData.h"
 #include "sensor_msgs/CameraInfo.h"
 #include <cmath>
 #include <ctime>
@@ -16,7 +16,7 @@
 #include "bica/Component.h"
 
 const float maxDist = 2100.0;
-const int MaxDistPixels = 170;
+const int MaxDistPixels = 300;
 
 class PersonData: public bica::Component
 {
@@ -33,7 +33,7 @@ private:
 public:
   PersonData()
   {
-    dataPub = n.advertise<follow_person::PersonFollowedData>("/person_followed_data", 1);
+    dataPub = n.advertise<robocuphomeeducation_msgs::PersonFollowedData>("/person_followed_data", 1);
     talk_publisher = n.advertise<std_msgs::String>("/talk", 1);
     info_sub = n.subscribe("/camera/rgb/camera_info", 1, &PersonData::cb_info, this);
     sub_image = n.subscribe("/camera/depth/image_raw", 1, &PersonData::cb_image, this);
@@ -97,8 +97,10 @@ public:
           }
         }
         if(obj == "person"){
-          if(dist < maxDist && abs(centralPixel - prevCentralPixel) <= MaxDistPixels){
-            follow_person::PersonFollowedData data;
+          //ROS_ERROR("Tengo que ver a una persona");
+          //&& abs(centralPixel - prevCentralPixel) <= MaxDistPixels
+          if(dist < maxDist){
+            robocuphomeeducation_msgs::PersonFollowedData data;
             prevCentralPixel = centralPixel;
             data.dist = dist;
             data.centralPixel = centralPixel;
@@ -106,7 +108,8 @@ public:
             dataPub.publish(data);
           }
         }else{
-          follow_person::PersonFollowedData data;
+          //ROS_ERROR("Tengo que ver a un objeto");
+          robocuphomeeducation_msgs::PersonFollowedData data;
           prevCentralPixel = centralPixel;
           data.dist = dist;
           data.centralPixel = centralPixel;

@@ -1,6 +1,6 @@
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
-#include "follow_person/PersonFollowedData.h"
+#include "robocuphomeeducation_msgs/PersonFollowedData.h"
 #include "std_msgs/Int32.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/String.h"
@@ -32,11 +32,11 @@ public:
     talk_publisher_ = n_.advertise<std_msgs::String>("/talk", 1);
 
     width = 0;
-    minDist = 900.0;
-    maxDist = 1200.0;
+    minDist = 800.0;
+    maxDist = 1000.0;
     maxV = 0.5;
-    Kp = 0.3;
-    Kd = 0.7;
+    Kp = 0.2;
+    Kd = 0.8;
     prevV = 0;
     maxW = Pi / 2;
     prevErrorLinear = 0;
@@ -79,7 +79,7 @@ public:
     prevErrorAngular = currentErrorAngular;
   }
 
-  void cb(const follow_person::PersonFollowedData::ConstPtr& msg)
+  void cb(const robocuphomeeducation_msgs::PersonFollowedData::ConstPtr& msg)
   {
     if(isActive()){
       if(width != 0){
