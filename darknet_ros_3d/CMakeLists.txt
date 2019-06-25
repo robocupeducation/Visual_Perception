@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(pruebas_bica)
+project(darknet_ros_3d)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,15 +8,15 @@ project(pruebas_bica)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-bica
-bica_graph
-roscpp
-rospy
-std_msgs
-bica_graph
-bica_msgs
-pcl_ros
+  darknet_ros_msgs
+  robocuphomeeducation_msgs
+  roscpp
+  rospy
+  std_msgs
+  cv_bridge
 )
+
+find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -75,7 +75,7 @@ pcl_ros
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   bica_msgs
+#   darknet_ros_msgs#   robocuphomeeducation_msgs#   std_msgs
 # )
 
 ################################################
@@ -109,8 +109,8 @@ pcl_ros
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES pruebas_bica
-#  CATKIN_DEPENDS bica bica_graph bica_msgs roscpp rospy
+#  LIBRARIES darknet_ros_3d
+#  CATKIN_DEPENDS darknet_ros_msgs robocuphomeeducation_msgs roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -120,19 +120,21 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
-)
+
+include_directories(${catkin_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+add_executable(darknet3d src/darknet3d.cpp)
+
+target_link_libraries(darknet3d ${catkin_LIBRARIES})
+target_link_libraries(darknet3d ${OpenCV_LIBRARIES})
 
 
-add_executable(nodo_A src/nodo_A.cpp)
-add_dependencies(nodo_A ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(nodo_A ${catkin_LIBRARIES})
+
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/pruebas_bica.cpp
+#   src/${PROJECT_NAME}/darknet_ros_3d.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -143,7 +145,7 @@ target_link_libraries(nodo_A ${catkin_LIBRARIES})
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/pruebas_bica_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/darknet_ros_3d_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -200,7 +202,7 @@ target_link_libraries(nodo_A ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_pruebas_bica.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_darknet_ros_3d.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
