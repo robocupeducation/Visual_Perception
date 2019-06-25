@@ -4,7 +4,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "darknet_ros_msgs/BoundingBoxes.h"
 #include "darknet_ros_msgs/BoundingBox.h"
-//#include "robocuphomeeducation_msgs/BoundingBox3d.h"
+#include "robocuphomeeducation_msgs/BoundingBox3d.h"
 #include "robocuphomeeducation_msgs/BoundingBoxes3d.h"
 #include "sensor_msgs/Image.h"
 #include <vector>
@@ -30,7 +30,7 @@ public:
   {
     _yolo_sub = n.subscribe("/darknet_ros/bounding_boxes", 1, &Darknet3d::darknetCb, this);
     _depth_sub = n.subscribe("/camera/depth/image_raw", 1, &Darknet3d::depthCb, this);
-    _darknet3d_pub = n.advertise<robocuphomeeducation_msgs::BoundingBoxes3d>("/darknet_ros3d", 1);
+    _darknet3d_pub = n.advertise<robocuphomeeducation_msgs::BoundingBoxes3d>("/darknet_ros3d/bounding_boxes", 1);
   }
 
   float getDist(darknet_ros_msgs::BoundingBox p, const sensor_msgs::Image::ConstPtr& msg)
@@ -91,8 +91,6 @@ public:
     robocuphomeeducation_msgs::BoundingBoxes3d msg_to_publish;
     msg_to_publish.bounding_boxes = v;
     _darknet3d_pub.publish(msg_to_publish);
-
-    ROS_INFO("I am depth Callback");
   }
 
 };
