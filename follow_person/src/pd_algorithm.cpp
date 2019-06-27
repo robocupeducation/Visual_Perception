@@ -1,6 +1,6 @@
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
-#include "robocuphomeeducation_msgs/PersonFollowedData.h"
+#include "visual_perception_msgs/PersonFollowedData.h"
 #include "std_msgs/Int32.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/String.h"
@@ -79,7 +79,7 @@ public:
     prevErrorAngular = currentErrorAngular;
   }
 
-  void cb(const robocuphomeeducation_msgs::PersonFollowedData::ConstPtr& msg)
+  void cb(const visual_perception_msgs::PersonFollowedData::ConstPtr& msg)
   {
     if(isActive()){
       if(width != 0){

@@ -8,7 +8,7 @@
 #include "number_persons_recognition/BoundingBoxPerson.h"
 #include <vector>
 #include <algorithm>
-#include "robocuphomeeducation_msgs/PersonFollowedData.h"
+#include "visual_perception_msgs/PersonFollowedData.h"
 #include "sensor_msgs/CameraInfo.h"
 #include <cmath>
 #include <ctime>
@@ -33,7 +33,7 @@ private:
 public:
   PersonData()
   {
-    dataPub = n.advertise<robocuphomeeducation_msgs::PersonFollowedData>("/person_followed_data", 1);
+    dataPub = n.advertise<visual_perception_msgs::PersonFollowedData>("/person_followed_data", 1);
     talk_publisher = n.advertise<std_msgs::String>("/talk", 1);
     info_sub = n.subscribe("/camera/rgb/camera_info", 1, &PersonData::cb_info, this);
     sub_image = n.subscribe("/camera/depth/image_raw", 1, &PersonData::cb_image, this);
@@ -100,7 +100,7 @@ public:
           //ROS_ERROR("Tengo que ver a una persona");
           //&& abs(centralPixel - prevCentralPixel) <= MaxDistPixels
           if(dist < maxDist){
-            robocuphomeeducation_msgs::PersonFollowedData data;
+            visual_perception_msgs::PersonFollowedData data;
             prevCentralPixel = centralPixel;
             data.dist = dist;
             data.centralPixel = centralPixel;
@@ -109,7 +109,7 @@ public:
           }
         }else{
           //ROS_ERROR("Tengo que ver a un objeto");
-          robocuphomeeducation_msgs::PersonFollowedData data;
+          visual_perception_msgs::PersonFollowedData data;
           prevCentralPixel = centralPixel;
           data.dist = dist;
           data.centralPixel = centralPixel;
