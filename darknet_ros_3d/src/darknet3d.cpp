@@ -4,8 +4,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "darknet_ros_msgs/BoundingBoxes.h"
 #include "darknet_ros_msgs/BoundingBox.h"
-#include "robocuphomeeducation_msgs/BoundingBox3d.h"
-#include "robocuphomeeducation_msgs/BoundingBoxes3d.h"
+#include "visual_perception_msgs/BoundingBox3d.h"
+#include "visual_perception_msgs/BoundingBoxes3d.h"
 #include "sensor_msgs/Image.h"
 #include <vector>
 #include <algorithm>
@@ -30,7 +30,7 @@ public:
   {
     _yolo_sub = n.subscribe("/darknet_ros/bounding_boxes", 1, &Darknet3d::darknetCb, this);
     _depth_sub = n.subscribe("/camera/depth/image_raw", 1, &Darknet3d::depthCb, this);
-    _darknet3d_pub = n.advertise<robocuphomeeducation_msgs::BoundingBoxes3d>("/darknet_ros3d/bounding_boxes", 1);
+    _darknet3d_pub = n.advertise<visual_perception_msgs::BoundingBoxes3d>("/darknet_ros_3d/bounding_boxes", 1);
   }
 
   float getDist(darknet_ros_msgs::BoundingBox p, const sensor_msgs::Image::ConstPtr& msg)
@@ -69,12 +69,12 @@ public:
 
   void depthCb(const sensor_msgs::Image::ConstPtr& msg)
   {
-    std::vector<robocuphomeeducation_msgs::BoundingBox3d> v;
-    robocuphomeeducation_msgs::BoundingBox3d data;
+    std::vector<visual_perception_msgs::BoundingBox3d> v;
+    visual_perception_msgs::BoundingBox3d data;
     if(_originalBBoxes.size() > 0){
       float d;
       for(int i = 0; i < _originalBBoxes.size(); i++){
-        d = getDist(_originalBBoxes[i], msg);
+        d = Darknet3d::getDist(_originalBBoxes[i], msg);
         //Componer el mensaje
         data.Class = _originalBBoxes[i].Class;
         data.probability = _originalBBoxes[i].probability;
@@ -86,11 +86,11 @@ public:
         //meterlo en el array
         v.push_back(data);
       }
+      //Publicar el array
+      visual_perception_msgs::BoundingBoxes3d msg_to_publish;
+      msg_to_publish.bounding_boxes = v;
+      _darknet3d_pub.publish(msg_to_publish);
     }
-    //Publicar el array
-    robocuphomeeducation_msgs::BoundingBoxes3d msg_to_publish;
-    msg_to_publish.bounding_boxes = v;
-    _darknet3d_pub.publish(msg_to_publish);
   }
 
 };
