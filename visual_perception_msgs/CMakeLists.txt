@@ -51,6 +51,8 @@ find_package(catkin REQUIRED COMPONENTS
    PersonFollowedData.msg
    BoundingBoxes3d.msg
    BoundingBox3d.msg
+   BoundingBoxPerson.msg
+   BoundingBoxPersonArray.msg
  )
 
 ## Generate services in the 'srv' folder

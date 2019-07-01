@@ -4,8 +4,8 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "number_persons_recognition/BoundingBoxPersonArray.h"
-#include "number_persons_recognition/BoundingBoxPerson.h"
+#include "visual_perception_msgs/BoundingBoxPersonArray.h"
+#include "visual_perception_msgs/BoundingBoxPerson.h"
 #include <vector>
 #include <algorithm>
 #include "visual_perception_msgs/PersonFollowedData.h"
@@ -24,7 +24,7 @@ private:
   ros::NodeHandle n;
   ros::Subscriber sub_image, sub_persons, info_sub, object_subscriber_;
   ros::Publisher dataPub, talk_publisher;
-  std::vector<number_persons_recognition::BoundingBoxPerson> person_arr;
+  std::vector<visual_perception_msgs::BoundingBoxPerson> person_arr;
   time_t currentTime = time(NULL);
   time_t prevTime = time(NULL);
   int prevCentralPixel;
@@ -41,7 +41,7 @@ public:
     object_subscriber_ = n.subscribe("/orders", 1, &PersonData::objectCallback, this);
     obj = "person";
   }
-  float getDist(number_persons_recognition::BoundingBoxPerson p, const sensor_msgs::Image::ConstPtr& msg)
+  float getDist(visual_perception_msgs::BoundingBoxPerson p, const sensor_msgs::Image::ConstPtr& msg)
   {
     float dist;
     int width, height;
@@ -70,12 +70,12 @@ public:
     return med;
   }
 
-  int getCentralPixel(number_persons_recognition::BoundingBoxPerson p)
+  int getCentralPixel(visual_perception_msgs::BoundingBoxPerson p)
   {
     return (int)((p.xmin + p.xmax) / 2);
   }
 
-  void cb_persons(const number_persons_recognition::BoundingBoxPersonArray::ConstPtr& msg)
+  void cb_persons(const visual_perception_msgs::BoundingBoxPersonArray::ConstPtr& msg)
   {
     person_arr = msg->persons_array;
 

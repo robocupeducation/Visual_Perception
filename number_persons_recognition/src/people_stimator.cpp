@@ -4,8 +4,8 @@
 #include "darknet_ros_msgs/BoundingBox.h"
 #include "std_msgs/Int32.h"
 #include "std_msgs/String.h"
-#include "number_persons_recognition/BoundingBoxPersonArray.h"
-#include "number_persons_recognition/BoundingBoxPerson.h"
+#include "visual_perception_msgs/BoundingBoxPersonArray.h"
+#include "visual_perception_msgs/BoundingBoxPerson.h"
 #include <vector>
 #include <time.h>
 #include <stdio.h>
@@ -25,7 +25,7 @@ public:
   Stimator()
   {
     obj = "person";
-    person_stimation_publisher = n.advertise<number_persons_recognition::BoundingBoxPersonArray>("/person_stimate", 1);
+    person_stimation_publisher = n.advertise<visual_perception_msgs::BoundingBoxPersonArray>("/person_stimate", 1);
     sub_node = n.subscribe("/darknet_ros/bounding_boxes", 1, &Stimator::cb, this);
     object_subscriber = n.subscribe("/orders", 1, &Stimator::objectCallback, this);
     prueba_pub = n.advertise<std_msgs::String>("/prueba", 1);
@@ -36,8 +36,8 @@ public:
   void cb(const darknet_ros_msgs::BoundingBoxes::ConstPtr& msg)
   {
     int boxessize = msg->bounding_boxes.size();
-    std::vector<number_persons_recognition::BoundingBoxPerson> v;
-    number_persons_recognition::BoundingBoxPerson element;
+    std::vector<visual_perception_msgs::BoundingBoxPerson> v;
+    visual_perception_msgs::BoundingBoxPerson element;
     for (int i = 0; i < boxessize; i++)
     {
       //ROS_ERROR("object to detect: %s", obj.c_str());
@@ -52,7 +52,7 @@ public:
         }
       }
     }
-    number_persons_recognition::BoundingBoxPersonArray a;
+    visual_perception_msgs::BoundingBoxPersonArray a;
     a.persons_array = v;
     person_stimation_publisher.publish(a);
   }

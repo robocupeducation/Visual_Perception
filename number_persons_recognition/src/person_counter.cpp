@@ -3,8 +3,8 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "number_persons_recognition/BoundingBoxPersonArray.h"
-#include "number_persons_recognition/BoundingBoxPerson.h"
+#include "visual_perception_msgs/BoundingBoxPersonArray.h"
+#include "visual_perception_msgs/BoundingBoxPerson.h"
 #include <vector>
 #include <algorithm>
 
@@ -15,7 +15,7 @@ class Counter
 {
 private:
   ros::NodeHandle n;
-  std::vector<number_persons_recognition::BoundingBoxPerson> person_arr;
+  std::vector<visual_perception_msgs::BoundingBoxPerson> person_arr;
   cv_bridge::CvImagePtr cv_image;
   ros::Publisher person_count_publisher;
   ros::Subscriber sub_node_persons, sub_node_image;
@@ -28,7 +28,7 @@ public:
   }
 
 
-  void cb_stimation(const number_persons_recognition::BoundingBoxPersonArray::ConstPtr& msg)
+  void cb_stimation(const visual_perception_msgs::BoundingBoxPersonArray::ConstPtr& msg)
   {
     person_arr = msg->persons_array;
 
