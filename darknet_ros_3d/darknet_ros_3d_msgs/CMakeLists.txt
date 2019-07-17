@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(darknet_ros_3d)
+project(darknet_ros_3d_msgs)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,15 +8,9 @@ project(darknet_ros_3d)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  darknet_ros_msgs
-  robocuphomeeducation_msgs
-  roscpp
-  rospy
+  message_generation
   std_msgs
-  cv_bridge
 )
-
-find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -52,11 +46,11 @@ find_package(OpenCV REQUIRED)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+ add_message_files(
+   FILES
+   BoundingBoxes3d.msg
+   BoundingBox3d.msg
+ )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -73,10 +67,10 @@ find_package(OpenCV REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   darknet_ros_msgs#   robocuphomeeducation_msgs#   std_msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   std_msgs
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -109,8 +103,10 @@ find_package(OpenCV REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES darknet_ros_3d
-#  CATKIN_DEPENDS darknet_ros_msgs robocuphomeeducation_msgs roscpp rospy std_msgs
+#  LIBRARIES visual_perception_msgs
+  CATKIN_DEPENDS
+  message_runtime
+  std_msgs
 #  DEPENDS system_lib
 )
 
@@ -120,21 +116,14 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-
-include_directories(${catkin_INCLUDE_DIRS})
-include_directories(${OpenCV_INCLUDE_DIRS})
-
-add_executable(darknet3d src/darknet3d.cpp)
-
-target_link_libraries(darknet3d ${catkin_LIBRARIES})
-target_link_libraries(darknet3d ${OpenCV_LIBRARIES})
-
-
-
+include_directories(
+# include
+  ${catkin_INCLUDE_DIRS}
+)
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/darknet_ros_3d.cpp
+#   src/${PROJECT_NAME}/visual_perception_msgs.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -145,7 +134,7 @@ target_link_libraries(darknet3d ${OpenCV_LIBRARIES})
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/darknet_ros_3d_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/visual_perception_msgs_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -202,7 +191,7 @@ target_link_libraries(darknet3d ${OpenCV_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_darknet_ros_3d.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_visual_perception_msgs.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
