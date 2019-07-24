@@ -158,9 +158,7 @@ public:
   {
     if(isActive())
     {
-      _mtx.lock();
       _originalBBoxes = msg->bounding_boxes;
-      _mtx.unlock();
     }
   }
 
@@ -172,9 +170,7 @@ public:
       darknet_ros_3d_msgs::BoundingBox3d data;
       std::vector<darknet_ros_msgs::BoundingBox> originalBBoxes;
 
-      _mtx.lock();
       originalBBoxes = _originalBBoxes;
-      _mtx.unlock();
 
       if(originalBBoxes.size() > 0)
       {
